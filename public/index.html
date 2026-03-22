@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>CreatorKit — Write Posts That Sell</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════
+   TOKENS
+═══════════════════════════ */
+:root {
+  --bg:#0a0a0a; --surf:#141414; --surf2:#1c1c1c;
+  --bdr:rgba(255,255,255,0.08); --bdr-h:rgba(255,255,255,0.16);
+  --txt:#f0ede8; --txt-m:rgba(240,237,232,0.50); --txt-d:rgba(240,237,232,0.28);
+  --acc:#e8ff47; --acc-d:rgba(232,255,71,0.10); --acc-t:#0a0a0a;
+  --grn:#4eff91; --amb:#ffb347; --red:#ff5c5c; --blu:#5cb8ff;
+  --r:10px; --r-s:7px;
+  --topbar:52px; --sidebar:248px; --mobnav:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;overflow:hidden;-webkit-font-smoothing:antialiased}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* ═══════════════════════════
+   SHELL
+═══════════════════════════ */
+.shell{display:grid;grid-template-columns:var(--sidebar) 1fr;grid-template-rows:var(--topbar) 1fr;height:100vh;overflow:hidden}
+
+/* TOPBAR */
+.topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--bdr);background:var(--bg);z-index:100;gap:12px}
+.tb-left{display:flex;align-items:center;gap:16px;min-width:0}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.4px;display:flex;align-items:center;gap:7px;flex-shrink:0}
+.logo-dot{width:7px;height:7px;background:var(--acc);border-radius:50%;animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+.tb-tag{font-size:11.5px;color:var(--txt-d);border-left:1px solid var(--bdr);padding-left:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.status{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt-m)}
+.status::before{content:'';width:6px;height:6px;background:var(--grn);border-radius:50%;flex-shrink:0}
+.pill{font-size:10.5px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--acc-d);color:var(--acc);border:1px solid rgba(232,255,71,.18);letter-spacing:.02em;white-space:nowrap}
+.menu-tog{display:none;background:none;border:1px solid var(--bdr);border-radius:var(--r-s);color:var(--txt-m);padding:6px 8px;cursor:pointer;align-items:center;gap:5px;font-size:12px;font-family:'DM Sans',sans-serif}
+
+/* SIDEBAR */
+.sidebar{border-right:1px solid var(--bdr);padding:16px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;background:var(--bg);transition:transform .22s ease}
+.sb-label{font-size:9.5px;font-weight:600;color:var(--txt-d);letter-spacing:.12em;text-transform:uppercase;padding:10px 10px 4px;margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r-s);cursor:pointer;color:var(--txt-m);font-size:13px;transition:all .12s;border:1px solid transparent;user-select:none}
+.nav-item:hover{background:var(--surf);color:var(--txt);border-color:var(--bdr)}
+.nav-item.active{background:var(--acc-d);color:var(--acc);border-color:rgba(232,255,71,.14)}
+.nav-icon{width:15px;height:15px;opacity:.65;flex-shrink:0}
+.nav-item.active .nav-icon{opacity:1}
+.nav-bdg{margin-left:auto;font-size:9.5px;padding:2px 6px;border-radius:8px;background:var(--surf2);color:var(--txt-d)}
+.sb-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--bdr)}
+.usage-box{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r-s);padding:10px 12px;margin-bottom:10px}
+.usage-row{font-size:10px;color:var(--txt-d);display:flex;justify-content:space-between;margin-bottom:6px}
+.usage-track{height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.usage-fill{height:100%;border-radius:2px;background:var(--acc);transition:width .4s ease}
+.sb-tip{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r-s);padding:11px 12px;font-size:11.5px;color:var(--txt-m);line-height:1.65}
+.sb-tip strong{display:block;font-size:10px;font-weight:600;color:var(--acc);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+
+/* MAIN */
+.main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0}
+
+/* ═══════════════════════════
+   PANELS
+═══════════════════════════ */
+.panel{display:none;flex-direction:column;flex:1;overflow:hidden}
+.panel.active{display:flex}
+.p-head{padding:20px 24px 0;flex-shrink:0}
+.p-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.4px;margin-bottom:3px}
+.p-sub{font-size:12.5px;color:var(--txt-m);margin-bottom:16px}
+
+/* Formula strip */
+.fstrip{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.fchip{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:var(--r-s);border:1px solid var(--bdr);cursor:pointer;transition:all .12s;background:var(--surf);min-width:88px}
+.fchip:hover{border-color:var(--bdr-h);background:var(--surf2)}
+.fchip.sel{border-color:var(--acc);background:var(--acc-d)}
+.fc-name{font-family:'Syne',sans-serif;font-size:11.5px;font-weight:700;color:var(--txt);letter-spacing:.02em}
+.fchip.sel .fc-name{color:var(--acc)}
+.fc-desc{font-size:9.5px;color:var(--txt-d);line-height:1.4}
+.fchip.sel .fc-desc{color:rgba(232,255,71,.55)}
+
+/* Formula explainer */
+.fex{display:none;gap:8px;align-items:flex-start;padding:7px 11px;background:var(--surf);border:1px solid rgba(232,255,71,.13);border-radius:var(--r-s);margin-bottom:14px}
+.fex.on{display:flex}
+.fex-lbl{font-family:'Syne',sans-serif;font-size:10.5px;font-weight:700;color:var(--acc);white-space:nowrap;padding-top:1px}
+.fex-txt{font-size:11px;color:var(--txt-m);line-height:1.55}
+
+/* Panel body */
+.p-body{display:grid;grid-template-columns:1fr 1fr;flex:1;overflow:hidden;border-top:1px solid var(--bdr)}
+.col-in{padding:20px 24px;overflow-y:auto;border-right:1px solid var(--bdr);display:flex;flex-direction:column}
+.col-out{padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+
+/* ═══════════════════════════
+   FORM
+═══════════════════════════ */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10.5px;font-weight:500;color:var(--txt-m);margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em}
+.field input,.field select,.field textarea{width:100%;background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r-s);color:var(--txt);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 11px;outline:none;transition:border-color .12s,background .12s;appearance:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(232,255,71,.38);background:var(--surf2)}
+.field textarea{resize:none;height:76px;line-height:1.6}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(240,237,232,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer}
+.field select option{background:#1c1c1c;color:var(--txt)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gen-btn{width:100%;padding:12px;background:var(--acc);color:var(--acc-t);font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.05em;border:none;border-radius:var(--r-s);cursor:pointer;transition:transform .12s,box-shadow .12s;margin-top:auto;padding-top:13px;display:flex;align-items:center;justify-content:center;gap:7px;text-transform:uppercase}
+.gen-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,255,71,.22)}
+.gen-btn:active{transform:translateY(0);box-shadow:none}
+.gen-btn.busy{background:var(--surf2);color:var(--txt-m);cursor:not-allowed;transform:none;box-shadow:none}
+.spinner{width:13px;height:13px;border:2px solid rgba(0,0,0,.2);border-top-color:var(--acc-t);border-radius:50%;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══════════════════════════
+   OUTPUT
+═══════════════════════════ */
+.out-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;flex-shrink:0}
+.out-lbl{font-size:9.5px;font-weight:600;color:var(--txt-d);text-transform:uppercase;letter-spacing:.1em}
+.regen-btn{font-size:11px;color:var(--txt-m);background:none;border:1px solid var(--bdr);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s}
+.regen-btn:hover{border-color:var(--bdr-h);color:var(--txt)}
+.ocard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;transition:border-color .12s;animation:up .28s ease both}
+.ocard:hover{border-color:var(--bdr-h)}
+@keyframes up{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.ocard-body{padding:13px 15px;font-size:13px;line-height:1.75;color:var(--txt);font-style:italic}
+.ocard-foot{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-top:1px solid var(--bdr);background:rgba(0,0,0,.18);gap:8px;flex-wrap:wrap}
+.sc-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sc-item{display:flex;align-items:center;gap:5px}
+.sc-lbl{font-size:9.5px;color:var(--txt-d);text-transform:uppercase;letter-spacing:.05em}
+.sc-track{width:32px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px;transition:width .55s ease}
+.sc-fill.hi{background:var(--grn)}.sc-fill.md{background:var(--amb)}.sc-fill.lo{background:var(--red)}
+.sc-num{font-size:10px;font-weight:600;font-family:'Syne',sans-serif}
+.sc-num.hi{color:var(--grn)}.sc-num.md{color:var(--amb)}.sc-num.lo{color:var(--red)}
+.copy-btn{font-size:11px;font-weight:500;color:var(--txt-m);background:none;border:1px solid var(--bdr);border-radius:6px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s;white-space:nowrap;flex-shrink:0}
+.copy-btn:hover{color:var(--acc);border-color:rgba(232,255,71,.28)}
+.copy-btn.ok{color:var(--grn);border-color:rgba(78,255,145,.28)}
+.bio-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;animation:up .28s ease both}
+.bio-txt{font-size:14px;line-height:1.85;color:var(--txt);margin-bottom:12px}
+.bio-chars{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--txt-d);margin-bottom:10px}
+.char-track{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.char-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.bio-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.btag{font-size:9.5px;font-weight:500;padding:3px 9px;border-radius:20px;letter-spacing:.02em}
+.btag.g{background:rgba(78,255,145,.09);color:var(--grn);border:1px solid rgba(78,255,145,.18)}
+.btag.a{background:rgba(255,179,71,.09);color:var(--amb);border:1px solid rgba(255,179,71,.18)}
+.btag.b{background:rgba(92,184,255,.09);color:var(--blu);border:1px solid rgba(92,184,255,.18)}
+.skel{background:linear-gradient(90deg,var(--surf) 25%,var(--surf2) 50%,var(--surf) 75%);background-size:200% 100%;animation:shimmer 1.15s infinite;border-radius:5px;height:13px;margin-bottom:7px}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.estate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;padding:32px 24px;color:var(--txt-d)}
+.estate-icon{font-size:28px;opacity:.35;margin-bottom:6px}
+.estate-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--txt-m)}
+.estate-sub{font-size:11.5px;line-height:1.65;max-width:210px}
+.prev-note{font-size:10.5px;color:var(--txt-d);text-align:center;padding:8px 0 2px;border-top:1px solid var(--bdr)}
+.prev-badge{font-size:10px;color:var(--txt-d);padding:3px 8px;background:var(--surf2);border-radius:5px;border:1px solid var(--bdr)}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surf2);border:1px solid var(--bdr-h);color:var(--txt);font-size:12px;padding:9px 15px;border-radius:var(--r-s);display:flex;align-items:center;gap:8px;transform:translateY(70px);opacity:0;transition:all .22s ease;z-index:10000;max-width:calc(100vw - 40px)}
+.toast.on{transform:translateY(0);opacity:1}
+.toast::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--grn);flex-shrink:0}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200}
+.overlay.on{display:block}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:2px}
+
+/* ═══════════════════════════
+   MOBILE NAV
+═══════════════════════════ */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bdr);z-index:300;padding-bottom:env(safe-area-inset-bottom)}
+.mob-nav-inner{display:flex}
+.mnav{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;cursor:pointer;color:var(--txt-m);font-size:10px;transition:color .12s;border:none;background:none;font-family:'DM Sans',sans-serif}
+.mnav.active{color:var(--acc)}
+.mnav svg{width:20px;height:20px}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media(max-width:900px){
+  .p-body{grid-template-columns:1fr;overflow-y:auto}
+  .col-in{border-right:none;border-bottom:1px solid var(--bdr);overflow-y:visible}
+  .col-out{overflow-y:visible}
+}
+@media(max-width:720px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:260px;z-index:250;transform:translateX(-100%);padding-top:calc(var(--topbar) + 12px)}
+  .sidebar.open{transform:translateX(0)}
+  .menu-tog{display:flex}
+  .tb-tag{display:none}
+  .status span{display:none}
+  .mob-nav{display:block}
+  .main{padding-bottom:var(--mobnav)}
+  .p-head{padding:16px 16px 0}
+  .col-in{padding:16px}
+  .col-out{padding:16px}
+  .fstrip{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .fstrip::-webkit-scrollbar{height:0}
+  .fchip{flex-shrink:0}
+  .toast{bottom:calc(var(--mobnav) + 12px);right:12px;left:12px}
+}
+@media(max-width:480px){
+  .row2{grid-template-columns:1fr}
+  .p-title{font-size:18px}
+  .sc-row{gap:7px}
+  .sc-lbl{display:none}
+  .topbar{padding:0 14px}
+  .pill{display:none}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="tb-left">
+    <button class="menu-tog" onclick="toggleDrawer()">
+      <svg width="15" height="15" fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <div class="logo"><div class="logo-dot"></div>CreatorKit</div>
+    <span class="tb-tag">Write posts that stop the scroll — and convert.</span>
+  </div>
+  <div class="tb-right">
+    <div class="status"><span>Active</span></div>
+    <span class="pill">Formula-Powered · Not Guesswork</span>
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-label">Tools</div>
+  <div class="nav-item active" onclick="goPanel('hooks',this)">
+    <svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Hook Generator
+  </div>
+  <div class="nav-item" onclick="goPanel('bio',this)">
+    <svg class="nav-icon" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 13c0-3 2.5-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Bio Optimizer
+  </div>
+  <div class="nav-item" onclick="goPanel('captions',this)">
+    <svg class="nav-icon" fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 7h6M5 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Caption Writer
+  </div>
+  <div class="sb-label">Formulas</div>
+  <div class="nav-item" onclick="setFSidebar('AIDA')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>AIDA<span class="nav-bdg">Classic</span></div>
+  <div class="nav-item" onclick="setFSidebar('PAS')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M8 2v8M8 13v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/></svg>PAS<span class="nav-bdg">Converts</span></div>
+  <div class="nav-item" onclick="setFSidebar('BAB')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M3 12L8 4l5 8H3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Before/After/Bridge</div>
+  <div class="nav-item" onclick="setFSidebar('4U')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M4 2v7a4 4 0 008 0V2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 14h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>4 U's<span class="nav-bdg">Scroll-stop</span></div>
+  <div class="nav-item" onclick="setFSidebar('CURVE')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M2 14C4 8 7 5 14 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Curiosity Gap</div>
+  <div class="sb-footer">
+    <div class="usage-box">
+      <div class="usage-row"><span>Generations this session</span><span id="u-count">0 / 30</span></div>
+      <div class="usage-track"><div class="usage-fill" id="u-bar" style="width:0%"></div></div>
+    </div>
+    <div class="sb-tip"><strong>Pro tip</strong>Pick a formula before generating. Each one hits a different psychological trigger — curiosity, urgency, trust, or desire.</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HOOKS -->
+  <div class="panel active" id="panel-hooks">
+    <div class="p-head">
+      <div class="p-title">Hook Generator</div>
+      <div class="p-sub">Stop-the-scroll first lines built on proven formulas — not AI guesswork.</div>
+      <div class="fstrip" id="fs-hooks">
+        <div class="fchip sel" onclick="setF(this,'hooks','AIDA')" data-f="AIDA"><span class="fc-name">AIDA</span><span class="fc-desc">Attention → Desire</span></div>
+        <div class="fchip" onclick="setF(this,'hooks','PAS')" data-f="PAS"><span class="fc-name">PAS</span><span class="fc-desc">Problem → Solution</span></div>
+        <div class="fchip" onclick="setF(this,'hooks','BAB')" data-f="BAB"><span class="fc-name">Before/After</span><span class="fc-desc">Show transformation</span></div>
+        <div class="fchip" onclick="setF(this,'hooks','4U')" data-f="4U"><span class="fc-name">4 U's</span><span class="fc-desc">Urgent + specific</span></div>
+        <div class="fchip" onclick="setF(this,'hooks','CURVE')" data-f="CURVE"><span class="fc-name">Curiosity Gap</span><span class="fc-desc">Leave them wanting more</span></div>
+      </div>
+      <div class="fex on" id="fe-hooks"><span class="fex-lbl">AIDA —</span><span class="fex-txt">Attention → Interest → Desire → Action. Grab in line 1, build desire in line 2, hint at action without being pushy.</span></div>
+    </div>
+    <div class="p-body">
+      <div class="col-in">
+        <div class="field"><label>Your niche / what you sell</label><input id="h-niche" type="text" placeholder="e.g. handmade bags, fitness coaching, skincare"/></div>
+        <div class="field"><label>What is this post about?</label><textarea id="h-topic" placeholder="e.g. Launching 3 new bag styles this Friday — limited to 20 pieces..."></textarea></div>
+        <div class="row2">
+          <div class="field"><label>Platform</label><select id="h-platform"><option>Instagram</option><option>TikTok</option><option>Twitter / X</option><option>LinkedIn</option><option>Facebook</option></select></div>
+          <div class="field"><label>Tone</label><select id="h-tone"><option>Bold & Direct</option><option>Conversational</option><option>Funny</option><option>Emotional</option><option>Authoritative</option></select></div>
+        </div>
+        <div class="field"><label>Target audience (optional)</label><input id="h-audience" type="text" placeholder="e.g. women 18–35 who love bold fashion"/></div>
+        <button class="gen-btn" id="btn-hooks" onclick="genHooks()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 16 16"><path d="M8 1l1.8 4.2L14 7l-4.2 1.8L8 13l-1.8-4.2L2 7l4.2-1.8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Generate 5 Hooks
+        </button>
+      </div>
+      <div class="col-out" id="out-hooks">
+        <div class="out-hdr"><span class="out-lbl">Example output — AIDA</span><span class="prev-badge">Preview</span></div>
+        <div class="ocard" style="opacity:.65"><div class="ocard-body">"I dropped everything to make this bag. Friday it ships to whoever's fast enough."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill hi" style="width:80%"></div></div><span class="sc-num hi">8</span></div></div><button class="copy-btn">Copy</button></div></div>
+        <div class="ocard" style="opacity:.65"><div class="ocard-body">"Stop buying fast fashion that falls apart. This is the last bag you'll ever need."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:80%"></div></div><span class="sc-num hi">8</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill md" style="width:70%"></div></div><span class="sc-num md">7</span></div></div><button class="copy-btn">Copy</button></div></div>
+        <div class="ocard" style="opacity:.65"><div class="ocard-body">"20 pieces. No restock. You either move now or you don't get one."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:100%"></div></div><span class="sc-num hi">10</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill hi" style="width:100%"></div></div><span class="sc-num hi">10</span></div></div><button class="copy-btn">Copy</button></div></div>
+        <div class="prev-note">Fill in your details above → your results replace these examples</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIO -->
+  <div class="panel" id="panel-bio">
+    <div class="p-head">
+      <div class="p-title">Bio Optimizer</div>
+      <div class="p-sub">A bio that tells people who you are, what you sell, and why they should care — within your platform's character limit.</div>
+      <div class="fstrip" id="fs-bio">
+        <div class="fchip sel" onclick="setF(this,'bio','WHO-WHAT-WHO')" data-f="WHO-WHAT-WHO"><span class="fc-name">Who/What/Who</span><span class="fc-desc">I help [who] do [what]</span></div>
+        <div class="fchip" onclick="setF(this,'bio','RESULT')" data-f="RESULT"><span class="fc-name">Result-Led</span><span class="fc-desc">Lead with the outcome</span></div>
+        <div class="fchip" onclick="setF(this,'bio','PROOF')" data-f="PROOF"><span class="fc-name">Proof + CTA</span><span class="fc-desc">Credibility then action</span></div>
+        <div class="fchip" onclick="setF(this,'bio','PERSONALITY')" data-f="PERSONALITY"><span class="fc-name">Personality</span><span class="fc-desc">Human, relatable, real</span></div>
+      </div>
+      <div class="fex on" id="fe-bio"><span class="fex-lbl">WHO/WHAT/WHO —</span><span class="fex-txt">I help [who] achieve [what]. Simple and direct. Visitors know in 2 seconds if you're for them.</span></div>
+    </div>
+    <div class="p-body">
+      <div class="col-in">
+        <div class="field"><label>What do you do or sell?</label><input id="b-what" type="text" placeholder="e.g. handmade skincare products"/></div>
+        <div class="field"><label>Who is your customer?</label><input id="b-who" type="text" placeholder="e.g. busy moms who want clean beauty"/></div>
+        <div class="field"><label>What makes you different?</label><input id="b-diff" type="text" placeholder="e.g. all-natural, no chemicals, fast shipping"/></div>
+        <div class="row2">
+          <div class="field"><label>Platform</label><select id="b-platform"><option>Instagram</option><option>TikTok</option><option>Twitter / X</option><option>LinkedIn</option></select></div>
+          <div class="field"><label>Call to action</label><select id="b-cta"><option>Link in bio</option><option>DM to order</option><option>Shop now</option><option>Book a call</option><option>No CTA</option></select></div>
+        </div>
+        <div class="field"><label>Keywords to include (optional)</label><input id="b-keys" type="text" placeholder="e.g. handmade, organic, cruelty-free"/></div>
+        <button class="gen-btn" id="btn-bio" onclick="genBio()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 16 16"><path d="M8 1l1.8 4.2L14 7l-4.2 1.8L8 13l-1.8-4.2L2 7l4.2-1.8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Optimize My Bio
+        </button>
+      </div>
+      <div class="col-out" id="out-bio">
+        <div class="estate"><div class="estate-icon">✦</div><div class="estate-title">Ready to optimize</div><div class="estate-sub">Fill in your details and get 3 bios that convert visitors into followers.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAPTIONS -->
+  <div class="panel" id="panel-captions">
+    <div class="p-head">
+      <div class="p-title">Caption Writer</div>
+      <div class="p-sub">Captions that don't just describe your post — they sell it.</div>
+      <div class="fstrip" id="fs-captions">
+        <div class="fchip sel" onclick="setF(this,'captions','PAS')" data-f="PAS"><span class="fc-name">PAS</span><span class="fc-desc">Problem → Solve</span></div>
+        <div class="fchip" onclick="setF(this,'captions','STORY')" data-f="STORY"><span class="fc-name">Storytelling</span><span class="fc-desc">Hook → payoff</span></div>
+        <div class="fchip" onclick="setF(this,'captions','AIDA')" data-f="AIDA"><span class="fc-name">AIDA</span><span class="fc-desc">Classic sales flow</span></div>
+        <div class="fchip" onclick="setF(this,'captions','SOCIAL')" data-f="SOCIAL"><span class="fc-name">Social Proof</span><span class="fc-desc">Results drive trust</span></div>
+        <div class="fchip" onclick="setF(this,'captions','FOMO')" data-f="FOMO"><span class="fc-name">FOMO</span><span class="fc-desc">Urgency + scarcity</span></div>
+      </div>
+      <div class="fex on" id="fe-captions"><span class="fex-lbl">PAS —</span><span class="fex-txt">Problem → Agitate → Solution. Name the pain, make them feel it, then position your product as the relief. Highest-converting caption structure for sellers.</span></div>
+    </div>
+    <div class="p-body">
+      <div class="col-in">
+        <div class="field"><label>What are you posting about?</label><textarea id="c-topic" placeholder="e.g. New collection drop — 3 earthy-toned bags, handstitched, limited to 20 pieces..."></textarea></div>
+        <div class="row2">
+          <div class="field"><label>Goal</label><select id="c-goal"><option>Drive sales</option><option>Get engagement</option><option>Build brand</option><option>Announce launch</option><option>Build trust</option></select></div>
+          <div class="field"><label>Length</label><select id="c-length"><option>Short (1–2 lines)</option><option>Medium (3–5 lines)</option><option>Long (storytelling)</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Platform</label><select id="c-platform"><option>Instagram</option><option>TikTok</option><option>Twitter / X</option><option>LinkedIn</option></select></div>
+          <div class="field"><label>Tone</label><select id="c-tone"><option>Conversational</option><option>Bold & Direct</option><option>Emotional</option><option>Funny</option><option>Professional</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Hashtags</label><select id="c-tags"><option>5 hashtags</option><option>10+ hashtags</option><option>No hashtags</option></select></div>
+          <div class="field"><label>Emoji style</label><select id="c-emoji"><option>Minimal</option><option>Moderate</option><option>Expressive</option></select></div>
+        </div>
+        <button class="gen-btn" id="btn-captions" onclick="genCaption()">
+          <svg width="13" height="13" fill="none" viewBox="0 0 16 16"><path d="M8 1l1.8 4.2L14 7l-4.2 1.8L8 13l-1.8-4.2L2 7l4.2-1.8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Write My Caption
+        </button>
+      </div>
+      <div class="col-out" id="out-captions">
+        <div class="estate"><div class="estate-icon">✍</div><div class="estate-title">Ready to write</div><div class="estate-sub">Describe your post and get captions that convert scrollers into buyers.</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- Mobile nav -->
+<nav class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mnav active" id="mn-hooks" onclick="goPanel('hooks',null,'hooks')">
+      <svg fill="none" viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Hooks
+    </button>
+    <button class="mnav" id="mn-bio" onclick="goPanel('bio',null,'bio')">
+      <svg fill="none" viewBox="0 0 16 16"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 13c0-3 2.5-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Bio
+    </button>
+    <button class="mnav" id="mn-captions" onclick="goPanel('captions',null,'captions')">
+      <svg fill="none" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 7h6M5 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Captions
+    </button>
+  </div>
+</nav>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="toast" id="toast"><span id="t-msg">Copied</span></div>
+
+<script>
+'use strict';
+
+const PROXY_URL = '/api/generate';
+
+/* ─── Usage limiter ─── */
+const LIMIT = 30;
+let count = parseInt(sessionStorage.getItem('ck_n') || '0');
+function bump(){ count++; sessionStorage.setItem('ck_n', count); syncUsage(); }
+function syncUsage(){
+  const pct = Math.min(100,(count/LIMIT)*100);
+  const el = document.getElementById('u-count');
+  const bar = document.getElementById('u-bar');
+  if(el) el.textContent = count+' / '+LIMIT;
+  if(bar){ bar.style.width=pct+'%'; bar.style.background=pct>=90?'var(--red)':pct>=70?'var(--amb)':'var(--acc)'; }
+}
+function canGen(){ if(count>=LIMIT){ toast('Session limit reached. Reload to reset.'); return false; } return true; }
+syncUsage();
+
+/* ─── API ─── */
+async function callClaude(sys, usr, max=1400){
+  const r = await fetch(PROXY_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system: sys, user: usr, maxTokens: max })
+  });
+  const d = await r.json();
+  if (!r.ok || d.error) throw new Error(d.error || 'Server error ' + r.status);
+  if (!d.text) throw new Error('Empty response from AI. Try again.');
+  return d.text;
+}
+
+/* ─── State ─── */
+const F = {hooks:'AIDA', bio:'WHO-WHAT-WHO', captions:'PAS'};
+const FX = {
+  AIDA:'Attention → Interest → Desire → Action. Grab in line 1, build desire in line 2, hint at action without being pushy.',
+  PAS:'Problem → Agitate → Solution. Name the pain, make them feel it, then present your product as the fix.',
+  BAB:'Before/After/Bridge. Show where they are now (the struggle), where they could be (the dream), and your product as the bridge.',
+  '4U':'Urgent + Unique + Ultra-specific + Useful. Every line must pass all 4 tests. Include real numbers or details.',
+  CURVE:'Curiosity Gap. Say something intriguing or counterintuitive. Leave the key detail out — force them to keep reading.',
+  'WHO-WHAT-WHO':"I help [who] achieve [what]. Simple, direct, tells people immediately if you're for them.",
+  RESULT:'Lead with the transformation the customer gets. Results convert better than descriptions.',
+  PROOF:'Open with a credibility signal — customers, years, results — then your offer and CTA.',
+  PERSONALITY:"Be human first. Show your character before your product. Connection builds long-term trust.",
+  STORY:'Hook → rising tension → lesson or payoff. People share stories, not sales pitches.',
+  SOCIAL:'Open with a real result, number, or testimonial. Trust through proof. CTA at the end.',
+  FOMO:"Lead with scarcity or deadline. Make the cost of inaction feel real. Never use fake urgency."
+};
+
+/* ─── Nav ─── */
+function goPanel(name, sbEl, mnKey){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.mnav').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if(sbEl) sbEl.classList.add('active');
+  const mn = document.getElementById('mn-'+(mnKey||name));
+  if(mn) mn.classList.add('active');
+  closeDrawer();
+}
+function toggleDrawer(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('on'); }
+function closeDrawer(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('on'); }
+
+/* ─── Formula ─── */
+function setF(chip, panel, f){
+  document.getElementById('fs-'+panel).querySelectorAll('.fchip').forEach(c=>c.classList.remove('sel'));
+  chip.classList.add('sel');
+  F[panel]=f;
+  const ex=document.getElementById('fe-'+panel);
+  ex.classList.add('on');
+  ex.querySelector('.fex-lbl').textContent=f+' —';
+  ex.querySelector('.fex-txt').textContent=FX[f]||'';
+}
+function setFSidebar(f){
+  ['hooks','bio','captions'].forEach(p=>{
+    const strip=document.getElementById('fs-'+p);
+    if(!strip) return;
+    const chip=strip.querySelector('[data-f="'+f+'"]');
+    if(chip) setF(chip,p,f);
+  });
+}
+
+/* ─── Utilities ─── */
+function toast(msg,ms=2600){ const t=document.getElementById('toast'); document.getElementById('t-msg').textContent=msg; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),ms); }
+function cp(btn,txt){ navigator.clipboard.writeText(txt).then(()=>{ btn.textContent='✓ Copied'; btn.classList.add('ok'); toast('Copied to clipboard'); setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('ok'); },2000); }).catch(()=>toast('Copy failed')); }
+function scCls(n){ return n>=8?'hi':n>=6?'md':'lo'; }
+function scHTML(lbl,n){ const c=scCls(n); return `<div class="sc-item"><span class="sc-lbl">${lbl}</span><div class="sc-track"><div class="sc-fill ${c}" style="width:${n*10}%"></div></div><span class="sc-num ${c}">${n}</span></div>`; }
+function skels(id,n){ let h=''; for(let i=0;i<n;i++) h+=`<div class="ocard" style="animation-delay:${i*.08}s"><div class="ocard-body"><div class="skel" style="width:88%"></div><div class="skel" style="width:62%"></div></div><div class="ocard-foot"><div class="skel" style="width:130px;height:7px;margin:0"></div></div></div>`; document.getElementById(id).innerHTML=h; }
+function busy(id,lbl){ const b=document.getElementById(id); b.classList.add('busy'); b.innerHTML='<div class="spinner"></div> '+lbl; return b; }
+function ready(b,lbl){ b.classList.remove('busy'); b.innerHTML=ICO+' '+lbl; }
+function errOut(id,msg){ document.getElementById(id).innerHTML=`<div class="estate"><div class="estate-icon">⚠</div><div class="estate-title">Something went wrong</div><div class="estate-sub">${msg}</div></div>`; }
+const ICO='<svg width="13" height="13" fill="none" viewBox="0 0 16 16"><path d="M8 1l1.8 4.2L14 7l-4.2 1.8L8 13l-1.8-4.2L2 7l4.2-1.8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+
+/* ═══════════════════════════════════════
+   HOOK GENERATOR
+═══════════════════════════════════════ */
+async function genHooks(){
+  if(!canGen()) return;
+  const niche=document.getElementById('h-niche').value.trim();
+  const topic=document.getElementById('h-topic').value.trim();
+  const plat=document.getElementById('h-platform').value;
+  const tone=document.getElementById('h-tone').value;
+  const aud=document.getElementById('h-audience').value.trim();
+  const f=F.hooks;
+  if(!niche||!topic){ toast('Fill in your niche and topic first'); return; }
+  const btn=busy('btn-hooks','Generating...');
+  skels('out-hooks',5);
+  const fMap={
+    AIDA:'AIDA: Line 1 = unexpected or bold attention grab. Line 2 = builds interest or desire. Hint at action without being salesy.',
+    PAS:'PAS: Name a specific, real frustration the audience has. Make it sting. Then briefly position the product as the fix.',
+    BAB:'Before/After/Bridge: Line 1 = where they are now (the struggle). Line 2 = where they could be. Product bridges the gap.',
+    '4U':"4 U's: Every line must be Urgent (time pressure), Unique (fresh angle), Ultra-specific (real numbers or details), Useful (clear benefit).",
+    CURVE:'Curiosity Gap: Say something intriguing or counterintuitive. Do NOT resolve it — leave the key detail out to force them to keep reading.'
+  };
+  const sys=`You are a direct-response copywriter with 15 years writing social media hooks for small business sellers. Your writing is punchy, human, and never corporate. You never use: "unleash","discover","game-changer","dive in","in today's world","Are you tired of","Unlock","This is for you if". You write like a real seller — direct, unpolished in a good way.`;
+  const usr=`Write EXACTLY 5 hooks for a ${plat} post. Score each one immediately after.
+
+SELLER:
+- Niche/business: ${niche}
+- Post topic: ${topic}${aud?'\n- Target audience: '+aud:''}
+- Tone: ${tone}
+
+FORMULA: ${fMap[f]||f}
+
+RULES:
+- Each hook = 1–2 lines MAX. Hard limit.
+- Each must apply the formula correctly
+- Each must take a completely different angle: emotion, urgency, curiosity, specificity, story
+- No numbering, no quotation marks on the hook text itself, no labels
+- Sound like a real human seller — real, direct, a little raw
+- BANNED: "Are you tired of","Discover","Unlock","Game-changer","This is for you if","In a world where"
+
+Format EXACTLY (no extra text):
+
+HOOK1: [hook text]
+SCORE1: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+HOOK2: [hook text]
+SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+HOOK3: [hook text]
+SCORE3: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+HOOK4: [hook text]
+SCORE4: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+HOOK5: [hook text]
+SCORE5: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+Score honestly. A hook with no CTA element should get cta=3 or 4, not 8.`;
+  try{
+    const txt=await callClaude(sys,usr,1400);
+    const hooks=[...txt.matchAll(/HOOK\d+:\s*(.+)/g)].map(m=>m[1].trim());
+    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)/g)];
+    if(hooks.length===0) throw new Error('Unexpected response format.');
+    bump();
+    const out=document.getElementById('out-hooks');
+    out.innerHTML=`<div class="out-hdr"><span class="out-lbl">5 hooks — ${f} formula</span><button class="regen-btn" onclick="genHooks()">↺ Regenerate</button></div>`;
+    hooks.forEach((hook,i)=>{
+      const sm=scs[i]; const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3]}:{c:8,h:8,a:7};
+      const card=document.createElement('div'); card.className='ocard'; card.style.animationDelay=(i*.07)+'s';
+      card.innerHTML=`<div class="ocard-body">"${hook}"</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn" onclick="cp(this,\`${hook.replace(/`/g,"'")}\`)">Copy</button></div>`;
+      out.appendChild(card);
+    });
+  }catch(e){
+    errOut('out-hooks', 'Error: ' + (e.message || 'Unknown error'));
+  }
+  ready(btn,'Generate 5 Hooks');
+}
+
+/* ═══════════════════════════════════════
+   BIO OPTIMIZER
+═══════════════════════════════════════ */
+async function genBio(){
+  if(!canGen()) return;
+  const what=document.getElementById('b-what').value.trim();
+  const who=document.getElementById('b-who').value.trim();
+  const diff=document.getElementById('b-diff').value.trim();
+  const plat=document.getElementById('b-platform').value;
+  const cta=document.getElementById('b-cta').value;
+  const keys=document.getElementById('b-keys').value.trim();
+  const f=F.bio;
+  if(!what||!who){ toast('Fill in what you do and who your customer is'); return; }
+  const lims={Instagram:150,TikTok:80,'Twitter / X':160,LinkedIn:220};
+  const lim=lims[plat]||150;
+  const btn=busy('btn-bio','Optimizing...');
+  document.getElementById('out-bio').innerHTML=`<div class="skel" style="height:100px;margin:0;border-radius:10px"></div>`;
+  const fMap={
+    'WHO-WHAT-WHO':`[Who you help] + [what they get] + CTA. E.g. "Helping busy moms eat clean without spending hours cooking. Recipes weekly. Link below."`,
+    RESULT:'Lead with the transformation or result the customer gets — specific and measurable. Then what you do. Then CTA.',
+    PROOF:'Open with a credibility number or signal (e.g. "500+ customers", "3 years", "featured in..."). Then what you do. Then CTA.',
+    PERSONALITY:"Lead with something that makes you human — a real opinion, quirk, or truth. Then what you sell. Then CTA. Should feel written at 11pm by a real person."
+  };
+  const sys=`You are an expert social media bio writer. You write bios that convert profile visitors into followers and customers. You understand that a great bio does three things under the character limit: says who it's for, what they get, and what to do next. You never write: "Passionate about","On a mission to","I love", or start with "Welcome". Every word must earn its place.`;
+  const usr=`Write 3 optimized bios for ${plat}. Each must be UNDER ${lim} characters — hard limit, count carefully.
+
+SELLER:
+- What they sell: ${what}
+- Target customer: ${who}${diff?'\n- What makes them different: '+diff:''}${keys?'\n- Keywords to include: '+keys:''}
+- Call to action: ${cta}
+
+FORMULA: ${fMap[f]||f}
+
+RULES:
+- Each bio strictly under ${lim} characters
+- No hashtags in the bio itself
+- Human, not corporate. No filler.
+- CTA must feel natural, not forced
+- All 3 must feel noticeably different — different angles, different voice
+- BANNED: "Passionate about","I help people","On a mission to","I love",starting with "Welcome"
+
+Format EXACTLY:
+BIO1: [bio text]
+BIO2: [bio text]
+BIO3: [bio text]
+
+Nothing else.`;
+  try{
+    const txt=await callClaude(sys,usr,700);
+    const bios=[]; txt.split('\n').forEach(l=>{ const m=l.match(/^BIO\d+:\s*(.+)/); if(m) bios.push(m[1].trim()); });
+    if(bios.length===0) throw new Error('Unexpected response format.');
+    bump();
+    const out=document.getElementById('out-bio');
+    out.innerHTML=`<div class="out-hdr"><span class="out-lbl">3 bios — ${f} formula</span><button class="regen-btn" onclick="genBio()">↺ Regenerate</button></div>`;
+    bios.forEach((bio,i)=>{
+      const len=bio.length, pct=Math.min(100,Math.round((len/lim)*100)), ok=len<=lim;
+      const hasCTA=/dm|link|shop|book|order|click|visit|tap|grab|get/i.test(bio);
+      const banned=/passionate about|on a mission|i love|welcome/i.test(bio);
+      const card=document.createElement('div'); card.className='bio-card'; card.style.animationDelay=(i*.1)+'s';
+      card.innerHTML=`<div class="bio-txt">${bio}</div><div class="bio-chars"><span>${len} / ${lim} chars</span><div class="char-track"><div class="char-fill" style="width:${pct}%;background:${ok?'var(--grn)':'var(--red)'}"></div></div><span style="color:${ok?'var(--grn)':'var(--red)'}">${ok?'✓ Within limit':'✕ Too long'}</span></div><div class="bio-tags"><span class="btag ${ok?'g':'a'}">${ok?'Length OK':'Needs trimming'}</span>${hasCTA?'<span class="btag b">Has CTA</span>':'<span class="btag a">No CTA</span>'}${banned?'<span class="btag a">Review wording</span>':'<span class="btag g">Sounds human</span>'}<span class="btag b">${plat}-ready</span></div><button class="copy-btn" onclick="cp(this,\`${bio.replace(/`/g,"'")}\`)">Copy</button>`;
+      out.appendChild(card);
+    });
+  }catch(e){ errOut('out-bio','Error: ' + (e.message || 'Unknown error')); }
+  ready(btn,'Optimize My Bio');
+}
+
+/* ═══════════════════════════════════════
+   CAPTION WRITER
+═══════════════════════════════════════ */
+async function genCaption(){
+  if(!canGen()) return;
+  const topic=document.getElementById('c-topic').value.trim();
+  const goal=document.getElementById('c-goal').value;
+  const length=document.getElementById('c-length').value;
+  const plat=document.getElementById('c-platform').value;
+  const tone=document.getElementById('c-tone').value;
+  const tags=document.getElementById('c-tags').value;
+  const emoji=document.getElementById('c-emoji').value;
+  const f=F.captions;
+  if(!topic){ toast("Describe what you're posting first"); return; }
+  const btn=busy('btn-captions','Writing...');
+  skels('out-captions',2);
+  const fMap={
+    PAS:'PAS: Open by naming a specific pain. Line 2 agitates — make them feel it more. Then your product/post is the relief. The pivot should feel like exhaling.',
+    STORY:'Storytelling: First line = surprising or vulnerable hook. Then a 2-4 line mini-story with real tension. End with the lesson or the product as the payoff.',
+    AIDA:'AIDA: Line 1 = bold or unexpected attention grab. Middle = build interest and desire. End = one clear CTA that feels natural, not pushy.',
+    SOCIAL:'Social Proof: Open with a real result, number, or customer outcome. Build trust through specificity. Then make the ask. The proof does the selling.',
+    FOMO:'FOMO: Lead with real scarcity or a deadline (limited pieces, ending tonight, only X left). Make the cost of inaction feel real. Never use fake urgency.'
+  };
+  const lenMap={'Short (1–2 lines)':'1-2 lines only. Ruthlessly tight.','Medium (3–5 lines)':'3-5 lines with natural breaks. Punchy, no fluff.','Long (storytelling)':'6-10 lines with paragraph breaks. Build slowly, pay off strong.'};
+  const eMap={Minimal:'Max 1 emoji. Often better with none.',Moderate:'2-4 emojis at natural pause points.',Expressive:'Emojis throughout — every one must serve a purpose.'};
+  const tMap={'5 hashtags':'End with exactly 5 targeted hashtags. Mix 1-2 broad with 3-4 niche-specific.','10+ hashtags':'End with 10-15 hashtags covering broad, niche, and product-specific.','No hashtags':'No hashtags.'};
+  const sys=`You are a social media copywriter for small business sellers worldwide. You write captions that sound like a real person — not a brand, not a bot. You know the first line either earns the "more" tap or loses the sale. You never use filler. BANNED phrases: "game-changer","don't miss out","limited time only","tap the link in bio to learn more","I'm so excited to share".`;
+  const usr=`Write 2 caption variations for a ${plat} post. Both must use the formula. Both must sound completely different — different angles, different voice, different structure.
+
+POST:
+- Topic: ${topic}
+- Goal: ${goal}
+- Tone: ${tone}
+- Length: ${lenMap[length]}
+- Emojis: ${eMap[emoji]}
+- Hashtags: ${tMap[tags]}
+
+FORMULA: ${fMap[f]||f}
+
+RULES:
+- First line of each must stop a scroll — treat it like a hook
+- Sound like a real seller, not a marketing department
+- CTA must feel earned, not tacked on
+- The 2 captions must feel written by different people with the same product
+
+Format EXACTLY:
+
+CAPTION1:
+[caption text]
+SCORE1: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+CAPTION2:
+[caption text]
+SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10]
+
+Nothing else.`;
+  try{
+    const txt=await callClaude(sys,usr,1400);
+    const caps=[...txt.matchAll(/CAPTION\d+:\n([\s\S]*?)(?=SCORE\d+:)/g)].map(m=>m[1].trim());
+    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)/g)];
+    if(caps.length===0) throw new Error('Unexpected response format.');
+    bump();
+    const out=document.getElementById('out-captions');
+    out.innerHTML=`<div class="out-hdr"><span class="out-lbl">2 captions — ${f} formula</span><button class="regen-btn" onclick="genCaption()">↺ Regenerate</button></div>`;
+    caps.forEach((cap,i)=>{
+      const sm=scs[i]; const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3]}:{c:8,h:8,a:7};
+      const card=document.createElement('div'); card.className='ocard'; card.style.animationDelay=(i*.1)+'s';
+      // Fix: store caption text in dataset to preserve line breaks on copy
+      card.innerHTML=`<div class="ocard-body" style="font-style:normal;white-space:pre-line">${cap}</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn">Copy</button></div>`;
+      card.querySelector('.copy-btn').addEventListener('click', function(){ cp(this, cap); });
+      out.appendChild(card);
+    });
+  }catch(e){ errOut('out-captions','Error: ' + (e.message || 'Unknown error')); }
+  ready(btn,'Write My Caption');
+}
+</script>
+</body>
+</html>
