@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
   return new Promise((resolve) => {
     const options = {
       hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      path: `/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
