@@ -239,7 +239,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="nav-item" onclick="setFSidebar('CURVE')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M2 14C4 8 7 5 14 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Curiosity Gap</div>
   <div class="sb-footer">
     <div class="usage-box">
-      <div class="usage-row"><span>Generations this session</span><span id="u-count">0 / 30</span></div>
+      <div class="usage-row"><span>Generations this session</span><span id="u-count">0 / 200</span></div>
       <div class="usage-track"><div class="usage-fill" id="u-bar" style="width:0%"></div></div>
     </div>
     <div class="sb-tip"><strong>Pro tip</strong>Pick a formula before generating. Each one hits a different psychological trigger — curiosity, urgency, trust, or desire.</div>
@@ -385,7 +385,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 const PROXY_URL = '/api/generate';
 
 /* ─── Usage limiter ─── */
-const LIMIT = 30;
+const LIMIT = 200;
 let count = parseInt(sessionStorage.getItem('ck_n') || '0');
 function bump(){ count++; sessionStorage.setItem('ck_n', count); syncUsage(); }
 function syncUsage(){
@@ -395,7 +395,7 @@ function syncUsage(){
   if(el) el.textContent = count+' / '+LIMIT;
   if(bar){ bar.style.width=pct+'%'; bar.style.background=pct>=90?'var(--red)':pct>=70?'var(--amb)':'var(--acc)'; }
 }
-function canGen(){ if(count>=LIMIT){ toast('Session limit reached. Reload to reset.'); return false; } return true; }
+function canGen(){ if(count>=LIMIT){ toast('Daily limit reached. Come back tomorrow.'); return false; } return true; }
 syncUsage();
 
 /* ─── API ─── */
@@ -462,6 +462,7 @@ function setFSidebar(f){
 }
 
 /* ─── Utilities ─── */
+function esc(str){ return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function toast(msg,ms=2600){ const t=document.getElementById('toast'); document.getElementById('t-msg').textContent=msg; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),ms); }
 function cp(btn,txt){ navigator.clipboard.writeText(txt).then(()=>{ btn.textContent='✓ Copied'; btn.classList.add('ok'); toast('Copied to clipboard'); setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('ok'); },2000); }).catch(()=>toast('Copy failed')); }
 function scCls(n){ return n>=8?'hi':n>=6?'md':'lo'; }
@@ -493,54 +494,64 @@ async function genHooks(){
     '4U':"4 U's: Every line must be Urgent (time pressure), Unique (fresh angle), Ultra-specific (real numbers or details), Useful (clear benefit).",
     CURVE:'Curiosity Gap: Say something intriguing or counterintuitive. Do NOT resolve it — leave the key detail out to force them to keep reading.'
   };
-  const sys=`You are a direct-response copywriter with 15 years writing social media hooks for small business sellers. Your writing is punchy, human, and never corporate. You never use: "unleash","discover","game-changer","dive in","in today's world","Are you tired of","Unlock","This is for you if". You write like a real seller — direct, unpolished in a good way.`;
-  const usr=`Write EXACTLY 5 hooks for a ${plat} post. Score each one immediately after.
+  const sys=`You are a direct-response copywriter who writes social media content for small business sellers. You write the way real sellers talk — short sentences, specific details, a little imperfect. Never sound like a brand or a marketing team.
 
-SELLER:
-- Niche/business: ${niche}
-- Post topic: ${topic}${aud?'\n- Target audience: '+aud:''}
+The difference between robotic and human writing:
+ROBOTIC: "Discover our amazing new collection of handcrafted bags that will elevate your style."
+HUMAN: "Took me 3 months to get this bag right. It's finally ready. Limited to 30 pieces."
+
+Always write like the second example.`;
+  const usr=`Write EXACTLY 5 hooks for a ${plat} post. Score each one right after.
+
+SELLER INFO:
+- Business: ${niche}
+- This post is about: ${topic}${aud?'\n- Who they\'re talking to: '+aud:''}
 - Tone: ${tone}
 
-FORMULA: ${fMap[f]||f}
+FORMULA TO APPLY: ${fMap[f]||f}
 
-RULES:
-- Each hook = 1–2 lines MAX. Hard limit.
-- Each must apply the formula correctly
-- Each must take a completely different angle: emotion, urgency, curiosity, specificity, story
-- No numbering, no quotation marks on the hook text itself, no labels
-- Sound like a real human seller — real, direct, a little raw
-- BANNED: "Are you tired of","Discover","Unlock","Game-changer","This is for you if","In a world where"
+WRITING RULES:
+- Each hook = 1–2 sentences only. Hard limit.
+- Apply the formula correctly — not just loosely inspired by it
+- Every hook must take a different angle: emotional, urgent, specific detail, curiosity, story
+- Write like the seller typed this from their phone — real, direct, a little raw
+- No quotation marks around the hook. No numbering. No labels.
+- NEVER use: "Are you tired of" / "Discover" / "Unlock" / "Game-changer" / "This is for you if" / "In a world where" / "Elevate" / "Transform"
 
-Format EXACTLY (no extra text):
+Format — follow this EXACTLY. Nothing before HOOK1, nothing after SCORE5:
 
-HOOK1: [hook text]
-SCORE1: clarity=[1-10] hook=[1-10] cta=[1-10]
+HOOK1: [hook text on one line]
+SCORE1: clarity=[1-10] hook=[1-10] cta=[1-10] | [specific feedback — what works or what exactly to improve]
 
-HOOK2: [hook text]
-SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10]
+HOOK2: [hook text on one line]
+SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10] | [specific feedback — what works or what exactly to improve]
 
-HOOK3: [hook text]
-SCORE3: clarity=[1-10] hook=[1-10] cta=[1-10]
+HOOK3: [hook text on one line]
+SCORE3: clarity=[1-10] hook=[1-10] cta=[1-10] | [specific feedback — what works or what exactly to improve]
 
-HOOK4: [hook text]
-SCORE4: clarity=[1-10] hook=[1-10] cta=[1-10]
+HOOK4: [hook text on one line]
+SCORE4: clarity=[1-10] hook=[1-10] cta=[1-10] | [specific feedback — what works or what exactly to improve]
 
-HOOK5: [hook text]
-SCORE5: clarity=[1-10] hook=[1-10] cta=[1-10]
+HOOK5: [hook text on one line]
+SCORE5: clarity=[1-10] hook=[1-10] cta=[1-10] | [specific feedback — what works or what exactly to improve]
 
-Score honestly. A hook with no CTA element should get cta=3 or 4, not 8.`;
+Scoring: 6=average, 7=good, 8=strong, 9=excellent, 10=rare. A hook with no CTA direction gets cta=3 or 4.`;
   try{
-    const txt=await callClaude(sys,usr,1400);
-    const hooks=[...txt.matchAll(/HOOK\d+:\s*(.+)/g)].map(m=>m[1].trim());
-    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)/g)];
-    if(hooks.length===0) throw new Error('Unexpected response format.');
+    const txt=await callClaude(sys,usr,1600);
+    // Clean single-line hook parser — prompt enforces one line per hook
+    const hookMatches=[...txt.matchAll(/HOOK\d+:\s*([^\n]+)/g)].map(m=>m[1].trim());
+    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)\s*\|?\s*([^\n]*)/g)];
+    if(hookMatches.length===0) throw new Error('Could not parse hooks. Try regenerating.');
     bump();
     const out=document.getElementById('out-hooks');
     out.innerHTML=`<div class="out-hdr"><span class="out-lbl">5 hooks — ${f} formula</span><button class="regen-btn" onclick="genHooks()">↺ Regenerate</button></div>`;
-    hooks.forEach((hook,i)=>{
-      const sm=scs[i]; const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3]}:{c:8,h:8,a:7};
+    hookMatches.forEach((hook,i)=>{
+      const sm=scs[i];
+      const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3],note:sm[4].trim()}:{c:7,h:7,a:6,note:''};
       const card=document.createElement('div'); card.className='ocard'; card.style.animationDelay=(i*.07)+'s';
-      card.innerHTML=`<div class="ocard-body">"${hook}"</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn" onclick="cp(this,\`${hook.replace(/`/g,"'")}\`)">Copy</button></div>`;
+      const noteHTML=s.note?`<div style="font-size:10px;color:var(--txt-m);padding:6px 15px 10px;line-height:1.5;border-top:1px solid var(--bdr)">${esc(s.note)}</div>`:'';
+      card.innerHTML=`<div class="ocard-body">"${esc(hook)}"</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn">Copy</button></div>${noteHTML}`;
+      card.querySelector('.copy-btn').addEventListener('click', function(){ cp(this, hook); });
       out.appendChild(card);
     });
   }catch(e){
@@ -565,40 +576,51 @@ async function genBio(){
   const lims={Instagram:150,TikTok:80,'Twitter / X':160,LinkedIn:220};
   const lim=lims[plat]||150;
   const btn=busy('btn-bio','Optimizing...');
-  document.getElementById('out-bio').innerHTML=`<div class="skel" style="height:100px;margin:0;border-radius:10px"></div>`;
+  skels('out-bio',3);
   const fMap={
     'WHO-WHAT-WHO':`[Who you help] + [what they get] + CTA. E.g. "Helping busy moms eat clean without spending hours cooking. Recipes weekly. Link below."`,
     RESULT:'Lead with the transformation or result the customer gets — specific and measurable. Then what you do. Then CTA.',
     PROOF:'Open with a credibility number or signal (e.g. "500+ customers", "3 years", "featured in..."). Then what you do. Then CTA.',
     PERSONALITY:"Lead with something that makes you human — a real opinion, quirk, or truth. Then what you sell. Then CTA. Should feel written at 11pm by a real person."
   };
-  const sys=`You are an expert social media bio writer. You write bios that convert profile visitors into followers and customers. You understand that a great bio does three things under the character limit: says who it's for, what they get, and what to do next. You never write: "Passionate about","On a mission to","I love", or start with "Welcome". Every word must earn its place.`;
-  const usr=`Write 3 optimized bios for ${plat}. Each must be UNDER ${lim} characters — hard limit, count carefully.
+  const sys=`You are a social media bio writer who specialises in helping small business owners and creators get more followers and customers from their profiles. You write bios that feel like a real person wrote them — not a brand, not a marketing tool.
 
-SELLER:
+The difference between a weak bio and a strong one:
+WEAK: "Passionate about helping people achieve their goals through natural skincare solutions."
+STRONG: "Clean skincare for women done with everyday routines. No 10-step nonsense. Link below."
+
+Always write like the second example — specific, direct, no filler.`;
+  const usr=`Write 3 complete, different bios for ${plat}. Each must be under ${lim} characters. Finish every bio fully — never cut off mid-sentence.
+
+SELLER INFO:
 - What they sell: ${what}
-- Target customer: ${who}${diff?'\n- What makes them different: '+diff:''}${keys?'\n- Keywords to include: '+keys:''}
+- Who their customer is: ${who}${diff?'\n- What makes them different: '+diff:''}${keys?'\n- Keywords to include: '+keys:''}
 - Call to action: ${cta}
 
 FORMULA: ${fMap[f]||f}
 
 RULES:
-- Each bio strictly under ${lim} characters
-- No hashtags in the bio itself
-- Human, not corporate. No filler.
-- CTA must feel natural, not forced
-- All 3 must feel noticeably different — different angles, different voice
-- BANNED: "Passionate about","I help people","On a mission to","I love",starting with "Welcome"
+- Every bio strictly under ${lim} characters — count carefully
+- No hashtags inside the bio
+- Specific over vague — use real details, not adjectives
+- CTA woven in naturally, not bolted on at the end
+- Each bio must open differently and feel like a different person wrote it
+- BANNED: "Passionate about" / "On a mission to" / "I love" / starting with "Welcome" / "helping people achieve"
 
-Format EXACTLY:
-BIO1: [bio text]
-BIO2: [bio text]
-BIO3: [bio text]
-
-Nothing else.`;
+Format — one bio per line, nothing else:
+BIO1: [complete bio]
+BIO2: [complete bio]
+BIO3: [complete bio]`;
   try{
-    const txt=await callClaude(sys,usr,700);
-    const bios=[]; txt.split('\n').forEach(l=>{ const m=l.match(/^BIO\d+:\s*(.+)/); if(m) bios.push(m[1].trim()); });
+    const txt=await callClaude(sys,usr,1200);
+    // Primary parser
+    const bios=[];
+    txt.split('\n').forEach(l=>{ const m=l.match(/^BIO\d+:\s*(.+)/); if(m) bios.push(m[1].trim()); });
+    // Fallback: split on BIO markers if primary finds nothing
+    if(bios.length===0){
+      const parts=txt.split(/BIO\d+:/);
+      parts.slice(1).forEach(p=>{ const b=p.split('\n')[0].trim(); if(b) bios.push(b); });
+    }
     if(bios.length===0) throw new Error('Unexpected response format.');
     bump();
     const out=document.getElementById('out-bio');
@@ -608,7 +630,8 @@ Nothing else.`;
       const hasCTA=/dm|link|shop|book|order|click|visit|tap|grab|get/i.test(bio);
       const banned=/passionate about|on a mission|i love|welcome/i.test(bio);
       const card=document.createElement('div'); card.className='bio-card'; card.style.animationDelay=(i*.1)+'s';
-      card.innerHTML=`<div class="bio-txt">${bio}</div><div class="bio-chars"><span>${len} / ${lim} chars</span><div class="char-track"><div class="char-fill" style="width:${pct}%;background:${ok?'var(--grn)':'var(--red)'}"></div></div><span style="color:${ok?'var(--grn)':'var(--red)'}">${ok?'✓ Within limit':'✕ Too long'}</span></div><div class="bio-tags"><span class="btag ${ok?'g':'a'}">${ok?'Length OK':'Needs trimming'}</span>${hasCTA?'<span class="btag b">Has CTA</span>':'<span class="btag a">No CTA</span>'}${banned?'<span class="btag a">Review wording</span>':'<span class="btag g">Sounds human</span>'}<span class="btag b">${plat}-ready</span></div><button class="copy-btn" onclick="cp(this,\`${bio.replace(/`/g,"'")}\`)">Copy</button>`;
+      card.innerHTML=`<div class="bio-txt">${esc(bio)}</div><div class="bio-chars"><span>${len} / ${lim} chars</span><div class="char-track"><div class="char-fill" style="width:${pct}%;background:${ok?'var(--grn)':'var(--red)'}"></div></div><span style="color:${ok?'var(--grn)':'var(--red)'}">${ok?'✓ Within limit':'✕ Too long'}</span></div><div class="bio-tags"><span class="btag ${ok?'g':'a'}">${ok?'Length OK':'Needs trimming'}</span>${hasCTA?'<span class="btag b">Has CTA</span>':'<span class="btag a">No CTA</span>'}${banned?'<span class="btag a">Review wording</span>':'<span class="btag g">Sounds human</span>'}<span class="btag b">${plat}-ready</span></div><button class="copy-btn">Copy</button>`;
+      card.querySelector('.copy-btn').addEventListener('click', function(){ cp(this, bio); });
       out.appendChild(card);
     });
   }catch(e){ errOut('out-bio','Error: ' + (e.message || 'Unknown error')); }
@@ -641,11 +664,19 @@ async function genCaption(){
   const lenMap={'Short (1–2 lines)':'1-2 lines only. Ruthlessly tight.','Medium (3–5 lines)':'3-5 lines with natural breaks. Punchy, no fluff.','Long (storytelling)':'6-10 lines with paragraph breaks. Build slowly, pay off strong.'};
   const eMap={Minimal:'Max 1 emoji. Often better with none.',Moderate:'2-4 emojis at natural pause points.',Expressive:'Emojis throughout — every one must serve a purpose.'};
   const tMap={'5 hashtags':'End with exactly 5 targeted hashtags. Mix 1-2 broad with 3-4 niche-specific.','10+ hashtags':'End with 10-15 hashtags covering broad, niche, and product-specific.','No hashtags':'No hashtags.'};
-  const sys=`You are a social media copywriter for small business sellers worldwide. You write captions that sound like a real person — not a brand, not a bot. You know the first line either earns the "more" tap or loses the sale. You never use filler. BANNED phrases: "game-changer","don't miss out","limited time only","tap the link in bio to learn more","I'm so excited to share".`;
-  const usr=`Write 2 caption variations for a ${plat} post. Both must use the formula. Both must sound completely different — different angles, different voice, different structure.
+  const sys=`You are a social media copywriter for small business sellers. You write captions that sound like the seller wrote them — not a copywriter, not a brand. Real, specific, a little personal.
 
-POST:
-- Topic: ${topic}
+The difference between robotic and human captions:
+ROBOTIC: "Introducing our new product that will transform your daily routine and elevate your experience."
+HUMAN: "This one took 6 months to get right. It's here now. And it actually works."
+
+The first line either stops the scroll or loses the sale. Make it count.
+
+NEVER USE: "game-changer" / "don't miss out" / "limited time only" / "tap the link in bio to learn more" / "I'm so excited to share" / "transform your" / "elevate your" / "introducing our"`;
+  const usr=`Write 2 captions for a ${plat} post. Both use the formula. Both sound like different real people selling the same thing — different voice, different angle, different structure.
+
+POST DETAILS:
+- What it's about: ${topic}
 - Goal: ${goal}
 - Tone: ${tone}
 - Length: ${lenMap[length]}
@@ -655,35 +686,63 @@ POST:
 FORMULA: ${fMap[f]||f}
 
 RULES:
-- First line of each must stop a scroll — treat it like a hook
-- Sound like a real seller, not a marketing department
-- CTA must feel earned, not tacked on
-- The 2 captions must feel written by different people with the same product
+- First line must stop a scroll — treat it like the most important sentence you'll write
+- Every line earns its place — if a line doesn't add something, cut it
+- CTA feels earned, not forced — it comes naturally from the caption
+- Sound like a real seller, not a marketing team
+- Be specific — real numbers, real details, real situations beat vague claims every time
 
-Format EXACTLY:
+Output format — nothing before CAPTION1, nothing after SCORE2:
 
 CAPTION1:
-[caption text]
-SCORE1: clarity=[1-10] hook=[1-10] cta=[1-10]
+[full caption here]
+SCORE1: clarity=[1-10] hook=[1-10] cta=[1-10] | [what specifically makes this strong or what exactly needs work]
 
 CAPTION2:
-[caption text]
-SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10]
-
-Nothing else.`;
+[full caption here]
+SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10] | [what specifically makes this strong or what exactly needs work]`;
   try{
-    const txt=await callClaude(sys,usr,1400);
-    const caps=[...txt.matchAll(/CAPTION\d+:\n([\s\S]*?)(?=SCORE\d+:)/g)].map(m=>m[1].trim());
-    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)/g)];
-    if(caps.length===0) throw new Error('Unexpected response format.');
+    const txt=await callClaude(sys,usr,1800);
+
+    const caps=[];
+
+    // Strategy 1: standard — newline after CAPTION marker, content before SCORE
+    const pat1=/CAPTION\d+:\s*\n([\s\S]*?)(?=\n\s*SCORE\d+:)/g;
+    let m1; while((m1=pat1.exec(txt))!==null){ caps.push(m1[1].trim()); }
+
+    // Strategy 2: SCORE on same line as last caption line (no blank line gap)
+    if(caps.length===0){
+      const pat2=/CAPTION\d+:\s*\n([\s\S]*?)SCORE\d+:/g;
+      let m2; while((m2=pat2.exec(txt))!==null){ caps.push(m2[1].trim()); }
+    }
+
+    // Strategy 3: text starts on same line as CAPTION marker
+    if(caps.length===0){
+      const pat3=/CAPTION\d+:\s*(.+?)(?=\nSCORE\d+:|\nCAPTION\d+:|$)/gs;
+      let m3; while((m3=pat3.exec(txt))!==null){ const c=m3[1].trim(); if(c) caps.push(c); }
+    }
+
+    // Strategy 4: split on CAPTION marker, take everything before SCORE
+    if(caps.length===0){
+      txt.split(/CAPTION\d+:/).slice(1).forEach(chunk=>{
+        const si=chunk.search(/SCORE\d+:/);
+        const raw=si>-1?chunk.slice(0,si):chunk;
+        const c=raw.trim();
+        if(c) caps.push(c);
+      });
+    }
+
+    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)\s*\|?\s*([^\n]*)/g)];
+    if(caps.length===0) throw new Error('Could not parse captions. Try regenerating.');
     bump();
     const out=document.getElementById('out-captions');
     out.innerHTML=`<div class="out-hdr"><span class="out-lbl">2 captions — ${f} formula</span><button class="regen-btn" onclick="genCaption()">↺ Regenerate</button></div>`;
-    caps.forEach((cap,i)=>{
-      const sm=scs[i]; const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3]}:{c:8,h:8,a:7};
+    caps.slice(0,2).forEach((cap,i)=>{
+      const sm=scs[i];
+      const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3],note:sm[4].trim()}:{c:7,h:7,a:6,note:''};
+      const noteHTML=s.note?`<div style="font-size:10px;color:var(--txt-m);padding:6px 15px 10px;line-height:1.5;border-top:1px solid var(--bdr)">${s.note}</div>`:'';
       const card=document.createElement('div'); card.className='ocard'; card.style.animationDelay=(i*.1)+'s';
-      // Fix: store caption text in dataset to preserve line breaks on copy
-      card.innerHTML=`<div class="ocard-body" style="font-style:normal;white-space:pre-line">${cap}</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn">Copy</button></div>`;
+      card.innerHTML=`<div class="ocard-body" style="font-style:normal;white-space:pre-line">${cap}</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn">Copy</button></div>${noteHTML}`;
       card.querySelector('.copy-btn').addEventListener('click', function(){ cp(this, cap); });
       out.appendChild(card);
     });
