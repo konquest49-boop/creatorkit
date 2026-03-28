@@ -116,10 +116,13 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .out-lbl{font-size:9.5px;font-weight:600;color:var(--txt-d);text-transform:uppercase;letter-spacing:.1em}
 .regen-btn{font-size:11px;color:var(--txt-m);background:none;border:1px solid var(--bdr);border-radius:6px;padding:3px 9px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s}
 .regen-btn:hover{border-color:var(--bdr-h);color:var(--txt)}
-.ocard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;transition:border-color .12s;animation:up .28s ease both}
+.ocard{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);transition:border-color .12s;animation:up .28s ease both}
 .ocard:hover{border-color:var(--bdr-h)}
 @keyframes up{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .ocard-body{padding:13px 15px;font-size:13px;line-height:1.75;color:var(--txt);font-style:italic}
+.ocard-body.caption{font-style:normal;white-space:pre-line;max-height:280px;overflow-y:auto;padding-right:10px}
+.ocard-body.caption::-webkit-scrollbar{width:3px}
+.ocard-body.caption::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
 .ocard-foot{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-top:1px solid var(--bdr);background:rgba(0,0,0,.18);gap:8px;flex-wrap:wrap}
 .sc-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .sc-item{display:flex;align-items:center;gap:5px}
@@ -278,9 +281,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
       </div>
       <div class="col-out" id="out-hooks">
         <div class="out-hdr"><span class="out-lbl">Example output — AIDA</span><span class="prev-badge">Preview</span></div>
-        <div class="ocard" style="opacity:.65"><div class="ocard-body">"I dropped everything to make this bag. Friday it ships to whoever's fast enough."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill hi" style="width:80%"></div></div><span class="sc-num hi">8</span></div></div><button class="copy-btn">Copy</button></div></div>
-        <div class="ocard" style="opacity:.65"><div class="ocard-body">"Stop buying fast fashion that falls apart. This is the last bag you'll ever need."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:80%"></div></div><span class="sc-num hi">8</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill md" style="width:70%"></div></div><span class="sc-num md">7</span></div></div><button class="copy-btn">Copy</button></div></div>
-        <div class="ocard" style="opacity:.65"><div class="ocard-body">"20 pieces. No restock. You either move now or you don't get one."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:100%"></div></div><span class="sc-num hi">10</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill hi" style="width:100%"></div></div><span class="sc-num hi">10</span></div></div><button class="copy-btn">Copy</button></div></div>
+        <div class="ocard" style="opacity:.65"><div class="ocard-body">"I dropped everything to make this bag. Friday it ships to whoever's fast enough."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill hi" style="width:80%"></div></div><span class="sc-num hi">8</span></div></div><button class="copy-btn" onclick="cp(this,`I dropped everything to make this bag. Friday it ships to whoever's fast enough.`)">Copy</button></div></div>
+        <div class="ocard" style="opacity:.65"><div class="ocard-body">"Stop buying fast fashion that falls apart. This is the last bag you'll ever need."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:80%"></div></div><span class="sc-num hi">8</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill md" style="width:70%"></div></div><span class="sc-num md">7</span></div></div><button class="copy-btn" onclick="cp(this,`Stop buying fast fashion that falls apart. This is the last bag you'll ever need.`)">Copy</button></div></div>
+        <div class="ocard" style="opacity:.65"><div class="ocard-body">"20 pieces. No restock. You either move now or you don't get one."</div><div class="ocard-foot"><div class="sc-row"><div class="sc-item"><span class="sc-lbl">Clarity</span><div class="sc-track"><div class="sc-fill hi" style="width:100%"></div></div><span class="sc-num hi">10</span></div><div class="sc-item"><span class="sc-lbl">Hook</span><div class="sc-track"><div class="sc-fill hi" style="width:90%"></div></div><span class="sc-num hi">9</span></div><div class="sc-item"><span class="sc-lbl">CTA</span><div class="sc-track"><div class="sc-fill hi" style="width:100%"></div></div><span class="sc-num hi">10</span></div></div><button class="copy-btn" onclick="cp(this,`20 pieces. No restock. You either move now or you don't get one.`)">Copy</button></div></div>
         <div class="prev-note">Fill in your details above → your results replace these examples</div>
       </div>
     </div>
@@ -702,7 +705,7 @@ CAPTION2:
 [full caption here]
 SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10] | [what specifically makes this strong or what exactly needs work]`;
   try{
-    const txt=await callClaude(sys,usr,1800);
+    const txt=await callClaude(sys,usr,2400);
 
     const caps=[];
 
@@ -732,7 +735,8 @@ SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10] | [what specifically makes this st
       });
     }
 
-    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)\s*\|?\s*([^\n]*)/g)];
+    // Note regex — capture full line including any continuation
+    const scs=[...txt.matchAll(/SCORE\d+:\s*clarity=(\d+)\s+hook=(\d+)\s+cta=(\d+)\s*\|?\s*([^\n]*(?:\n(?!CAPTION\d+:|SCORE\d+:)[^\n]*)*)/g)];
     if(caps.length===0) throw new Error('Could not parse captions. Try regenerating.');
     bump();
     const out=document.getElementById('out-captions');
@@ -740,9 +744,9 @@ SCORE2: clarity=[1-10] hook=[1-10] cta=[1-10] | [what specifically makes this st
     caps.slice(0,2).forEach((cap,i)=>{
       const sm=scs[i];
       const s=sm?{c:+sm[1],h:+sm[2],a:+sm[3],note:sm[4].trim()}:{c:7,h:7,a:6,note:''};
-      const noteHTML=s.note?`<div style="font-size:10px;color:var(--txt-m);padding:6px 15px 10px;line-height:1.5;border-top:1px solid var(--bdr)">${s.note}</div>`:'';
+      const noteHTML=s.note?`<div style="font-size:10px;color:var(--txt-m);padding:6px 15px 10px;line-height:1.5;border-top:1px solid var(--bdr)">${esc(s.note)}</div>`:'';
       const card=document.createElement('div'); card.className='ocard'; card.style.animationDelay=(i*.1)+'s';
-      card.innerHTML=`<div class="ocard-body" style="font-style:normal;white-space:pre-line">${cap}</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn">Copy</button></div>${noteHTML}`;
+      card.innerHTML=`<div class="ocard-body caption">${esc(cap)}</div><div class="ocard-foot"><div class="sc-row">${scHTML('Clarity',s.c)}${scHTML('Hook',s.h)}${scHTML('CTA',s.a)}</div><button class="copy-btn">Copy</button></div>${noteHTML}`;
       card.querySelector('.copy-btn').addEventListener('click', function(){ cp(this, cap); });
       out.appendChild(card);
     });
