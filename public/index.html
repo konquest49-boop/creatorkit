@@ -161,21 +161,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:2px}
 
 /* ═══════════════════════════
-   PAYWALL MODAL
-═══════════════════════════ */
-#paywall-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:5000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
-.pw-box{background:var(--surf);border:1px solid var(--bdr-h);border-radius:14px;padding:36px 32px;max-width:400px;width:100%;text-align:center;position:relative;box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.pw-icon{font-size:36px;margin-bottom:12px}
-.pw-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.4px;color:var(--txt);margin-bottom:8px}
-.pw-sub{font-size:13.5px;color:var(--txt-m);line-height:1.65;margin-bottom:10px}
-.pw-perks{list-style:none;margin:0 0 24px;padding:0;text-align:left;display:inline-block}
-.pw-perks li{font-size:12.5px;color:var(--txt-m);padding:4px 0;display:flex;align-items:center;gap:8px}
-.pw-perks li::before{content:'✓';color:var(--acc);font-weight:700;font-size:13px;flex-shrink:0}
-.pw-btn{display:block;width:100%;padding:14px;background:var(--acc);color:var(--acc-t);font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:.05em;border:none;border-radius:var(--r-s);cursor:pointer;text-decoration:none;text-transform:uppercase;transition:transform .12s,box-shadow .12s;margin-bottom:10px}
-.pw-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(232,255,71,.28)}
-.pw-note{font-size:10.5px;color:var(--txt-d);line-height:1.5}
-
-/* ═══════════════════════════
    MOBILE NAV
 ═══════════════════════════ */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--bdr);z-index:300;padding-bottom:env(safe-area-inset-bottom)}
@@ -257,7 +242,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="nav-item" onclick="setFSidebar('CURVE')"><svg class="nav-icon" fill="none" viewBox="0 0 16 16"><path d="M2 14C4 8 7 5 14 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Curiosity Gap</div>
   <div class="sb-footer">
     <div class="usage-box">
-      <div class="usage-row"><span>Free trial</span><span id="u-count">3 free uses left</span></div>
+      <div class="usage-row"><span>Generations this session</span><span id="u-count">0 / 200</span></div>
       <div class="usage-track"><div class="usage-fill" id="u-bar" style="width:0%"></div></div>
     </div>
     <div class="sb-tip"><strong>Pro tip</strong>Pick a formula before generating. Each one hits a different psychological trigger — curiosity, urgency, trust, or desire.</div>
@@ -397,64 +382,23 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="toast" id="toast"><span id="t-msg">Copied</span></div>
 
-<!-- PAYWALL MODAL -->
-<div id="paywall-modal">
-  <div class="pw-box">
-    <div class="pw-icon">✦</div>
-    <div class="pw-title">You've used your 3 free generations</div>
-    <div class="pw-sub">Unlock CreatorKit for unlimited access — hooks, bios, and captions, forever.</div>
-    <ul class="pw-perks">
-      <li>Unlimited hook, bio &amp; caption generations</li>
-      <li>5 proven copy formulas per tool</li>
-      <li>Works for any niche or platform</li>
-      <li>One-time payment, no subscription</li>
-    </ul>
-    <a class="pw-btn" href="https://konquestor.gumroad.com/l/creatorkit" target="_blank" rel="noopener">Get Full Access →</a>
-    <div class="pw-note">One-time payment · Instant access · No recurring fees</div>
-  </div>
-</div>
-
 <script>
 'use strict';
 
 const PROXY_URL = '/api/generate';
 
-/* ─── Trial / Paywall ─── */
-const TRIAL_LIMIT = 3;
-const GUMROAD_URL = 'https://konquestor.gumroad.com/l/creatorkit';
-let count = parseInt(localStorage.getItem('ck_uses') || '0');
-
-function bump(){
-  count++;
-  localStorage.setItem('ck_uses', count);
-  syncUsage();
-}
-
+/* ─── Usage limiter ─── */
+const LIMIT = 200;
+let count = parseInt(sessionStorage.getItem('ck_n') || '0');
+function bump(){ count++; sessionStorage.setItem('ck_n', count); syncUsage(); }
 function syncUsage(){
-  const remaining = Math.max(0, TRIAL_LIMIT - count);
-  const pct = Math.min(100,(count/TRIAL_LIMIT)*100);
+  const pct = Math.min(100,(count/LIMIT)*100);
   const el = document.getElementById('u-count');
   const bar = document.getElementById('u-bar');
-  if(el) el.textContent = remaining + ' free use' + (remaining === 1 ? '' : 's') + ' left';
-  if(bar){ bar.style.width=pct+'%'; bar.style.background=pct>=100?'var(--red)':pct>=67?'var(--amb)':'var(--acc)'; }
+  if(el) el.textContent = count+' / '+LIMIT;
+  if(bar){ bar.style.width=pct+'%'; bar.style.background=pct>=90?'var(--red)':pct>=70?'var(--amb)':'var(--acc)'; }
 }
-
-function canGen(){
-  if(count >= TRIAL_LIMIT){
-    showPaywall();
-    return false;
-  }
-  return true;
-}
-
-function showPaywall(){
-  document.getElementById('paywall-modal').style.display='flex';
-}
-
-function closePaywall(){
-  document.getElementById('paywall-modal').style.display='none';
-}
-
+function canGen(){ if(count>=LIMIT){ toast('Daily limit reached. Come back tomorrow.'); return false; } return true; }
 syncUsage();
 
 /* ─── API ─── */
