@@ -11,11 +11,10 @@ module.exports = async function handler(req, res) {
   const key = process.env.GEMINI_KEY;
   if (!key) return res.status(500).json({ error: 'GEMINI_KEY not set in environment variables' });
 
-  // Fix: safe destructure with fallback
   const body = req.body || {};
   const system = typeof body.system === 'string' ? body.system : '';
   const user = typeof body.user === 'string' ? body.user.trim() : '';
-  const maxTokens = typeof body.maxTokens === 'number' ? body.maxTokens : 1400;
+  const maxTokens = typeof body.maxTokens === 'number' ? body.maxTokens : 2400;
 
   if (!user) return res.status(400).json({ error: 'Missing required field: user' });
 
@@ -23,7 +22,10 @@ module.exports = async function handler(req, res) {
 
   const payload = JSON.stringify({
     contents: [{ parts: [{ text: fullPrompt }] }],
-    generationConfig: { maxOutputTokens: maxTokens }
+    generationConfig: {
+      maxOutputTokens: maxTokens,
+      temperature: 0.9
+    }
   });
 
   return new Promise((resolve) => {
@@ -49,10 +51,9 @@ module.exports = async function handler(req, res) {
             return resolve();
           }
 
-          // Fix: handle safety blocks and empty candidates
           const candidate = result.candidates?.[0];
           if (!candidate) {
-            res.status(500).json({ error: 'No response from AI. Try rephrasing your input.' });
+            res.status(500).json({ error: 'No response from AI. Try again.' });
             return resolve();
           }
 
@@ -61,8 +62,14 @@ module.exports = async function handler(req, res) {
             return resolve();
           }
 
+          // FIX: join ALL parts, skip thinking parts (thought:true)
           const parts = candidate.content?.parts || [];
-const text = parts.filter(p => !p.thought).map(p => p.text || '').join('').trim();
+          const text = parts
+            .filter(p => !p.thought)
+            .map(p => p.text || '')
+            .join('')
+            .trim();
+
           if (!text) {
             res.status(500).json({ error: 'Empty response from AI. Try again.' });
             return resolve();
